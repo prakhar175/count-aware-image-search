@@ -23,18 +23,28 @@ class YOLOInference:
         
         for result in results:
             for box in result.boxes:
-                cls = [result.names[cls.item()] for cls in result.boxes.cls.int()]
+                cls = result.names[int(box.cls)]
                 conf = float(box.conf)
                 bbox=box.xyxy[0].tolist()
                 
                 detections.append({
                     'class' :cls,
-                   'conf':conf,
-                   'bbox':bbox,
-                   'count':1
+                    'conf':conf,
+                    'bbox':bbox,
+                    'count':1
                 })
-                class_counts[cls]=class_counts.get(cls,0) + 1  
-    
+                class_counts[cls]=class_counts.get(cls,0) + 1
+                
+        for det in detections:
+            det['count']=class_counts[det['class']]
+        return {
+            'img_path': str(img_path),
+            'det':detections,
+            'total_objects':len(detections),
+            'unique_classes':list(class_counts.keys()),
+            'class_counts':class_counts
+        }
+
     def process_dir(self,img_dir):
         metadata=[]
         patterns=[i for i in self.image_ext]
