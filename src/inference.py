@@ -39,7 +39,7 @@ class YOLOInference:
             det['count']=class_counts[det['class']]
         return {
             'img_path': str(img_path),
-            'det':detections,
+            'detections':detections,
             'total_objects':len(detections),
             'unique_classes':list(class_counts.keys()),
             'class_counts':class_counts
@@ -54,4 +54,5 @@ class YOLOInference:
             img_paths.extend(Path(img_dir).glob(pattern))
             
         for img_path in img_paths:
-            metadata.extend(self.process_img(img_path))
+            metadata.append(self.process_img(img_path))
+        return metadata
