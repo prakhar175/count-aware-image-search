@@ -8,7 +8,7 @@ from configs.config import CONF_THRESHOLD, YOLO_MODEL, IMAGE_EXTENSION
 class YOLOInference:
     
     def __init__(self, model_name):
-        self.model=YOLO(model_name)
+        self.model=YOLO(model_name,task="detect")
         self.conf_threshold=CONF_THRESHOLD
         self.image_ext=IMAGE_EXTENSION
         
