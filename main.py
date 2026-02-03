@@ -7,7 +7,13 @@ def init_session_state() -> None:
     session_defaults = {
         "metadata": None,
         "unique_class": [],
-        "count_options": {}
+        "count_options": {},
+        "search_params":{
+            "search_mode": "Or",
+            "selected_classes":[],
+            "thresholds":{},
+        },
+        "search_results":[]
     }
     
     for key,value in session_defaults.items():
@@ -24,12 +30,12 @@ option = st.radio("Choose the option",
                   horizontal=True)
 
 if option=="Process the new images":
-    st.expander("Process new images", expanded=True)
-    col1,col2 = st.columns(2)
-    with col1:
-        image_dir=st.text_input("Image directory path:", placeholder="path ")
-    with col2:
-        model_path=st.text_input("Model weight path",placeholder=" eg - yolo11m.pt")
+    with st.expander("Process new images", expanded=True):
+        col1,col2 = st.columns(2)
+        with col1:
+            image_dir=st.text_input("Image directory path:", placeholder="path ")
+        with col2:
+            model_path=st.text_input("Model weight path",placeholder=" eg - yolo11m.pt")
         
     if st.button("Start Inference"):
         if image_dir:
@@ -38,10 +44,13 @@ if option=="Process the new images":
                     inference=YOLOInference(model_path)
                     metadata=inference.process_dir(image_dir)
                     metadata_path=save_metadata(metadata,image_dir )
+                    
                     st.success(f" Processed {len(metadata)} images !!")
                     st.code(str(metadata_path))
                     st.session_state.metadata = metadata
                     st.session_state.unique_class, st.session_state.count_options = get_unique_classes_counts(metadata)
+                    
+                    
             except Exception as e:
                 st.error("Error :", str(e))
         else:
@@ -62,3 +71,54 @@ else:
                     st.error("Error", e)
             else:
                 st.warning("Path daal be")
+                
+                
+if st.session_state.metadata:
+    st.header("Search Engine ")
+    
+    with st.container():
+        st.session_state.search_params['search_mode'] =st.radio("Search mode",
+                 ("Or", "And"),
+                 horizontal=True)
+        
+        st.session_state.search_params['selected_classes'] =st.multiselect("Classes to select for :",
+                 options=st.session_state.unique_class,
+                 )
+        if st.session_state.search_params['selected_classes']:
+            st.subheader("Count threshold (Optional)")
+            cols = st.columns(len(st.session_state.search_params['selected_classes']))
+            for i, cls in enumerate(st.session_state.search_params["selected_classes"]):
+                with cols[i]:
+                    st.session_state.search_params['thresholds']['cls'] = st.selectbox(
+                        "Select the Max count", 
+                        options=["None"] + st.session_state.count_options[cls])
+        
+        if st.button("Search Images") and st.session_state.search_params['selected_classes']:
+            result = []
+            search_params=st.session_state.search_params
+            
+            for item in st.session_state.metadata:
+                matches=False
+                class_matches= {}
+                
+                for cls in search_params["selected_classes"]:
+                    class_detections = [d for d in item['detections'] if d['class'] == cls]
+                    class_count=len(class_detections)
+                    class_matches[cls]=False
+                    
+                    threshold = search_params['thresholds'].get(cls,"None")
+                    if threshold == "None":
+                        class_matches[cls] = (class_count>=1)
+                    else :
+                        class_matches[cls] = (class_count>=1 and class_count<int(threshold))
+                        
+                if search_params['search_mode'] == 'Or':
+                    matches = any(class_matches.values())
+                    
+                #AND variant
+                else:
+                    matches = all(class_matches.values())
+                    
+                if matches:
+                    result.append(item)
+            st.session_state.search_results = result
