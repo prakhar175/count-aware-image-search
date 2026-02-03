@@ -34,9 +34,6 @@ A powerful computer vision application that enables intelligent image searching 
 - [Configuration](#%EF%B8%8F-configuration)
 - [Examples](#-examples)
 - [Technical Details](#-technical-details)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
-- [License](#-license)
 
 ## 🚀 Installation
 
