@@ -274,6 +274,4 @@ Each processed image generates metadata:
   }
 }
 ```
-|
-
 If you find this project useful, please consider giving it a ⭐ on GitHub!
