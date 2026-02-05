@@ -12,11 +12,11 @@ A powerful computer vision application that enables intelligent image searching 
 - **Object Detection**: Automatically detect and catalog objects in your images using state-of-the-art YOLO models
 - **Smart Search**: Find images based on detected objects (e.g., "apple", "person", "bus", "car")
 - **Advanced Filtering**: 
-  - **OR Mode**: Find images containing ANY of the selected objects
-  - **AND Mode**: Find images containing ALL selected objects simultaneously
-  - **Count Thresholds**: Filter by minimum/maximum occurrence of objects in images
-- **Visual Results**: Display search results with bounding boxes and confidence scores
-- **Metadata Export**: Save and load detection metadata for quick future searches
+  - **OR Mode**: Find images containing ANY of the selected objects.
+  - **AND Mode**: Find images containing ALL selected objects simultaneously.
+  - **Count Thresholds**: Filter by minimum/maximum occurrence of objects in images.
+- **Visual Results**: Display search results with bounding boxes and confidence scores.
+- **Metadata Export**: Save and load detection metadata for quick future searches.
 
 ### User Interface
 - Clean, responsive web interface built with Streamlit
